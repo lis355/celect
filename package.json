@@ -1,0 +1,28 @@
+{
+  "name": "csstests",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build:debug": "set NODE_ENV=debug && gulp build"
+  },
+  "author": "alisa",
+  "license": "ISC",
+  "devDependencies": {
+    "args-parser": "^1.1.0",
+    "browser-sync": "^2.23.7",
+    "browserify": "^16.2.0",
+    "del": "^3.0.0",
+    "gulp": "github:gulpjs/gulp#4.0",
+    "gulp-autoprefixer": "^5.0.0",
+    "gulp-clean-css": "^3.9.3",
+    "gulp-concat": "^2.6.1",
+    "gulp-debug": "^3.2.0",
+    "gulp-if": "^2.0.2",
+    "gulp-json-editor": "^2.3.0",
+    "gulp-newer": "^1.4.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-uglify-es": "^1.0.1",
+    "vinyl-buffer": "^1.0.1",
+    "vinyl-source-stream": "^2.0.0"
+  }
+}

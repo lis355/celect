@@ -1,0 +1,35 @@
+* {
+	transition: all .3s;
+}
+
+body {
+	margin: 0;
+}
+
+#btn:hover {
+	background-color: greenyellow;
+}
+
+@media screen and (max-width: 800px) {
+	body {
+		background-color: #00000011;
+	}
+}
+
+@media screen and (max-width: 700px) {
+	body {
+		background-color: #00000022;
+	}
+}
+
+@media screen and (max-width: 600px) {
+	body {
+		background-color: #00000033;
+	}
+}
+
+@media screen and (max-width: 500px) {
+	body {
+		background-color: #00000044;
+	}
+}
