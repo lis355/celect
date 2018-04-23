@@ -2,6 +2,7 @@
 
 const gulp = require("gulp");
 const debug = require("gulp-debug");
+const path = require("path");
 //const rename = require("gulp-rename");
 const cleanCSS = require("gulp-clean-css");
 const autoprefixer = require("gulp-autoprefixer");
@@ -16,6 +17,8 @@ const buffer = require("vinyl-buffer");
 const uglify = require("gulp-uglify-es").default;
 const gulpIf = require("gulp-if");
 const args = require("args-parser")(process.argv);
+const merge = require("merge-stream");
+const enumerable = require("linq");
 
 const DEBUG = args["debug"];
 
@@ -25,8 +28,8 @@ if (DEBUG)
 const destinationFolder = "dest";
 
 const paths = {
-	sourceFolder : "src/",
-	destinationFolder : "dest"
+	sourceFolder: "src/",
+	destinationFolder: "dest"
 };
 
 paths.cssSourceFolder = paths.sourceFolder + "**/*.css";
@@ -37,7 +40,7 @@ paths.htmlSourceFolder = paths.sourceFolder + "**/*.html";
 paths.htmlDestinationFolder = paths.destinationFolder;
 
 paths.jsSourceFolder = paths.sourceFolder + "**/*.js";
-paths.jsEntries = "src/js/vk_inject.js";
+paths.jsEntries = ["src/js/vk_inject.js", "src/js/code2.js"];
 paths.jsMinName = "main.min.js";
 paths.jsDestinationFolder = paths.destinationFolder + "/js";
 
@@ -52,7 +55,6 @@ let tasks = {
 	watch: "watch",
 	clean: "clean",
 	build: "build",
-	serve: "serve",
 	dev: "dev"
 };
 
@@ -61,7 +63,7 @@ gulp.task(tasks.buildCSS, function () {
 		.pipe(cleanCSS())
 		.pipe(autoprefixer())
 		.pipe(debug({title: "CSS File: "}))
-		.pipe(concat(paths.cssMinName ))
+		.pipe(concat(paths.cssMinName))
 		.pipe(gulp.dest(paths.cssDestinationFolder))
 });
 
@@ -73,13 +75,18 @@ gulp.task(tasks.buildHTML, function () {
 });
 
 gulp.task(tasks.buildJS, function () {
-	return browserify({
-		entries: paths.jsEntries
-	}).bundle()
-		.pipe(source(paths.jsMinName))
-		.pipe(buffer())
-		.pipe(gulpIf(!DEBUG, uglify()))
-		.pipe(gulp.dest(paths.jsDestinationFolder))
+	return merge(
+		enumerable.from(paths.jsEntries)
+			.select(x =>
+				browserify({
+					entries: x
+				}).bundle()
+					.pipe(source(path.basename(x)))
+					.pipe(buffer())
+					.pipe(debug({title: "JS File: "}))
+					.pipe(gulpIf(!DEBUG, uglify()))
+					.pipe(gulp.dest(paths.jsDestinationFolder)))
+			.toArray());
 });
 
 gulp.task(tasks.buildManifest, function () {
@@ -91,9 +98,9 @@ gulp.task(tasks.buildManifest, function () {
 
 gulp.task(tasks.watch, function () {
 	gulp.watch(paths.cssSourceFolder, gulp.series(tasks.buildCSS));
-	gulp.watch(paths.htmlSourceFolder , gulp.series(tasks.buildHTML));
-	gulp.watch(paths.jsSourceFolder , gulp.series(tasks.buildJS));
-	gulp.watch(paths.manifestSourceFolder , gulp.series(tasks.buildManifest));
+	gulp.watch(paths.htmlSourceFolder, gulp.series(tasks.buildHTML));
+	gulp.watch(paths.jsSourceFolder, gulp.series(tasks.buildJS));
+	gulp.watch(paths.manifestSourceFolder, gulp.series(tasks.buildManifest));
 });
 
 gulp.task(tasks.clean, function () {
@@ -104,17 +111,8 @@ gulp.task(tasks.build, gulp.series(
 	tasks.clean,
 	gulp.parallel(tasks.buildCSS, tasks.buildHTML, tasks.buildManifest, tasks.buildJS)));
 
-/*gulp.task(tasks.serve, function () {
-	browserSync.init({
-		server: destinationFolder
-	});
-
-	browserSync.watch(destinationFolder +"/!**!/!*.*")
-		.on("change", browserSync.reload);
-});*/
-
 gulp.task(tasks.dev, gulp.series(
 	tasks.build,
-	gulp.parallel(tasks.watch/*, tasks.serve*/)));
+	tasks.watch));
 
 gulp.task("default", gulp.series(tasks.dev));

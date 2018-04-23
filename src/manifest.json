@@ -10,7 +10,7 @@
 			"run_at" : "document_start",
 			"all_frames": true,
 			"matches": [
-				"https://vk.com/*"
+				"*://vk.com/*"
 			]
 		}
 	]
