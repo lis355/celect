@@ -2,7 +2,8 @@
 
 (function () {
 
-	let module_1 = require("./module_1");
+	let module_1 = require("./modules/module_1");
+	console.log(module_1.a());
 
 	console.log("START");
 

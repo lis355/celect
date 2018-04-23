@@ -1,5 +1,7 @@
+console.log(__filename);
+
 module.exports = {
 	a : function () {
-		return 1;
+		return "QWERTY";
 	}
 };

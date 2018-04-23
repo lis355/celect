@@ -3,6 +3,7 @@
 const gulp = require("gulp");
 const debug = require("gulp-debug");
 const path = require("path");
+const fs = require("fs");
 //const rename = require("gulp-rename");
 const cleanCSS = require("gulp-clean-css");
 const autoprefixer = require("gulp-autoprefixer");
@@ -32,16 +33,24 @@ const paths = {
 	destinationFolder: "dest"
 };
 
-paths.cssSourceFolder = paths.sourceFolder + "**/*.css";
+paths.allTemplate = "**/*";
+
+paths.cssExtension = ".css";
+paths.cssSourceFolder = paths.sourceFolder + "css";
+paths.cssAllPaths = paths.sourceFolder + paths.allTemplate + paths.cssExtension;
 paths.cssMinName = "style.min.css";
 paths.cssDestinationFolder = paths.destinationFolder + "/css";
 
-paths.htmlSourceFolder = paths.sourceFolder + "**/*.html";
+paths.htmlExtension = ".css";
+paths.htmlSourceFolder = paths.sourceFolder + "html";
+paths.htmlAllPaths = paths.sourceFolder + paths.allTemplate + paths.htmlExtension;
 paths.htmlDestinationFolder = paths.destinationFolder;
 
-paths.jsSourceFolder = paths.sourceFolder + "**/*.js";
-paths.jsEntries = ["src/js/vk_inject.js", "src/js/code2.js"];
-paths.jsMinName = "main.min.js";
+paths.jsExtension = ".js";
+paths.jsSourceFolder = paths.sourceFolder + "js";
+paths.jsAllPaths = paths.sourceFolder + paths.allTemplate + paths.jsExtension;
+paths.jsEntries = ["vk_inject.js", "code2.js"];
+paths.jsCommonBuildPath = "common.js";
 paths.jsDestinationFolder = paths.destinationFolder + "/js";
 
 paths.manifestSourceFolder = paths.sourceFolder + "manifest.json";
@@ -59,7 +68,7 @@ let tasks = {
 };
 
 gulp.task(tasks.buildCSS, function () {
-	return gulp.src(paths.cssSourceFolder)
+	return gulp.src(paths.cssAllPaths)
 		.pipe(cleanCSS())
 		.pipe(autoprefixer())
 		.pipe(debug({title: "CSS File: "}))
@@ -68,25 +77,22 @@ gulp.task(tasks.buildCSS, function () {
 });
 
 gulp.task(tasks.buildHTML, function () {
-	return gulp.src(paths.htmlSourceFolder)
+	return gulp.src(paths.htmlAllPaths)
 		.pipe(newer(destinationFolder))
 		.pipe(debug({title: "HTML File: "}))
 		.pipe(gulp.dest(paths.htmlDestinationFolder))
 });
 
 gulp.task(tasks.buildJS, function () {
-	return merge(
-		enumerable.from(paths.jsEntries)
-			.select(x =>
-				browserify({
-					entries: x
-				}).bundle()
-					.pipe(source(path.basename(x)))
-					.pipe(buffer())
-					.pipe(debug({title: "JS File: "}))
-					.pipe(gulpIf(!DEBUG, uglify()))
-					.pipe(gulp.dest(paths.jsDestinationFolder)))
-			.toArray());
+	return browserify(paths.jsEntries, {
+		basedir: paths.jsSourceFolder
+	}).plugin("common-bundle", {
+		common: paths.jsCommonBuildPath
+	}).bundle()
+		.pipe(buffer())
+		.pipe(debug({title: "JS File: "}))
+		.pipe(gulpIf(!DEBUG, uglify()))
+		.pipe(gulp.dest(paths.jsDestinationFolder));
 });
 
 gulp.task(tasks.buildManifest, function () {
@@ -97,9 +103,9 @@ gulp.task(tasks.buildManifest, function () {
 });
 
 gulp.task(tasks.watch, function () {
-	gulp.watch(paths.cssSourceFolder, gulp.series(tasks.buildCSS));
-	gulp.watch(paths.htmlSourceFolder, gulp.series(tasks.buildHTML));
-	gulp.watch(paths.jsSourceFolder, gulp.series(tasks.buildJS));
+	gulp.watch(paths.cssAllPaths, gulp.series(tasks.buildCSS));
+	gulp.watch(paths.htmlAllPaths, gulp.series(tasks.buildHTML));
+	gulp.watch(paths.jsAllPaths, gulp.series(tasks.buildJS));
 	gulp.watch(paths.manifestSourceFolder, gulp.series(tasks.buildManifest));
 });
 
