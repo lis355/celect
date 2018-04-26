@@ -1,5 +1,5 @@
 'use strict';
 
-module.exports = function (gulp, options) {
+module.exports = function (gulp) {
 	return gulp.series("dev");
 };

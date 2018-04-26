@@ -1,10 +1,19 @@
 'use strict';
 
+const enumerable = require("linq");
+
 module.exports = function (gulp, options) {
 	return function () {
-		gulp.watch(options.cssAllPaths, gulp.series("buildcss"));
-		gulp.watch(options.htmlAllPaths, gulp.series("buildhtml"));
-		gulp.watch(options.jsAllPaths, gulp.series("buildjs"));
-		gulp.watch(options.manifestSourceFolder, gulp.series("buildmanifest"));
+		enumerable.from({
+			"**/*.css": "buildcss",
+			"**/*.html": "buildhtml",
+			"**/*.js": "buildjs",
+			"manifest.json": "buildmanifest"
+		}).forEach(x => gulp.watch(options.sourceFolder + x.key, gulp.series(x.value)));
+
+		/*gulp.watch(options.sourceFolder + "**!/!*.css", gulp.series("buildcss"));
+		gulp.watch(options.sourceFolder + "**!/!*.html", gulp.series("buildhtml"));
+		gulp.watch(options.sourceFolder + "**!/!*.js", gulp.series("buildjs"));
+		gulp.watch(options.sourceFolder + "manifest.json", gulp.series("buildmanifest"));*/
 	}
 };

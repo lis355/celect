@@ -7,11 +7,11 @@ const concat = require("gulp-concat");
 
 module.exports = function (gulp, options) {
 	return function () {
-		return gulp.src(options.cssAllPaths)
+		return gulp.src(options.sourceFolder + "**/*.css")
 			.pipe(cleanCSS())
 			.pipe(autoprefixer())
 			.pipe(debug({title: "CSS File: "}))
-			.pipe(concat(options.cssMinName))
-			.pipe(gulp.dest(options.cssDestinationFolder))
+			.pipe(concat("style.min.css"))
+			.pipe(gulp.dest(options.destinationFolder + "css/"))
 	}
 };
