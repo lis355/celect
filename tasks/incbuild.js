@@ -1,9 +1,9 @@
 'use strict';
 
-module.exports = function (gulp, options) {
+module.exports = function (gulp) {
 	return gulp.parallel(
-			options.tasks.buildCSS,
-			options.tasks.buildHTML,
-			options.tasks.buildManifest,
-			options.tasks.buildJS);
+			"buildcss",
+			"buildhtml",
+			"buildmanifest",
+			"buildjs");
 };

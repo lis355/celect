@@ -1,7 +1,7 @@
 'use strict';
 
-module.exports = function (gulp, options) {
+module.exports = function (gulp) {
 	return gulp.series(
-		options.tasks.clear,
-		options.tasks.incbuild);
+		"clear",
+		"incbuild");
 };

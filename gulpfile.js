@@ -4,10 +4,6 @@ const gulp = require("gulp");
 const args = require("args-parser")(process.argv);
 const enumerable = require("linq");
 
-const DEBUG = args["debug"];
-if (DEBUG)
-	console.log("DEBUG build");
-
 const options = {
 	sourceFolder: "src/",
 	destinationFolder: "dest/"
@@ -36,29 +32,37 @@ options.jsDestinationFolder = options.destinationFolder + "/js";
 options.manifestSourceFolder = options.sourceFolder + "manifest.json";
 options.manifestDestinationFolder = options.destinationFolder;
 
-let tasks = {
-	buildCSS: "buildcss",
-	buildHTML: "buildhtml",
-	buildJS: "buildjs",
-	buildManifest: "buildmanifest",
-	clear: "clear",
-	incbuild: "incbuild",
-	build: "build",
-	watch: "watch",
-	dev: "dev",
-	default: "default"
-};
+let tasksList = [
+	"buildcss",
+	"buildhtml",
+	"buildjs",
+	"buildmanifest",
+	"clear",
+	"incbuild",
+	"build",
+	"watch",
+	"dev",
+	"default"
+];
 
-function defineTask(taskName, options, path) {
+function defineTasks(tasksList) {
+	function defineTask(taskName, options, taskPath) {
+		options = options || {};
+		options.taskName = taskName;
+		options.DEBUG = DEBUG;
 
-	options = options || {};
-	options.taskName = taskName;
-	options.tasks = tasks;
-	options.DEBUG = DEBUG;
+		taskPath = taskPath || "./tasks/" + taskName;
 
-	path = path || "./tasks/" + taskName;
+		gulp.task(taskName, require(taskPath)(gulp, options));
 
-	gulp.task(taskName, require(path)(gulp, options));
+		//console.log(`Defined ${taskName} task`);
+	}
+
+	const DEBUG = args["debug"];
+	if (DEBUG)
+		console.log("DEBUG build");
+
+	enumerable.from(tasksList).forEach(x => defineTask(x, options));
 }
 
-enumerable.from(tasks).forEach(x =>	defineTask(x.value, options));
+defineTasks(tasksList);
