@@ -1,13 +1,13 @@
 'use strict';
 
+const browserify = require("browserify");
+const buffer = require("vinyl-buffer");
+const debug = require("gulp-debug");
+const gulpIf = require("gulp-if");
+const uglify = require("gulp-uglify-es").default;
+
 module.exports = function (gulp, options) {
 	return function () {
-		const browserify = require("browserify");
-		const buffer = require("vinyl-buffer");
-		const debug = require("gulp-debug");
-		const gulpIf = require("gulp-if");
-		const uglify = require("gulp-uglify-es").default;
-
 		return browserify(options.jsEntries, {
 			basedir: options.jsSourceFolder
 		}).plugin("common-bundle", {

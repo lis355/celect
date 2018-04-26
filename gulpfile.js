@@ -4,17 +4,6 @@ const gulp = require("gulp");
 const args = require("args-parser")(process.argv);
 const enumerable = require("linq");
 
-function task(taskName, options, path) {
-	options = options || {};
-	options.taskName = taskName;
-	options.tasks = tasks;
-	options.DEBUG = DEBUG;
-
-	path = path || "./tasks/" + taskName;
-
-	gulp.task(taskName, () => require(path)(gulp, options)());
-}
-
 const DEBUG = args["debug"];
 if (DEBUG)
 	console.log("DEBUG build");
@@ -53,10 +42,23 @@ let tasks = {
 	buildJS: "buildjs",
 	buildManifest: "buildmanifest",
 	clear: "clear",
+	incbuild: "incbuild",
 	build: "build",
 	watch: "watch",
 	dev: "dev",
 	default: "default"
 };
 
-enumerable.from(tasks).forEach(x =>	task(x.value, options));
+function defineTask(taskName, options, path) {
+
+	options = options || {};
+	options.taskName = taskName;
+	options.tasks = tasks;
+	options.DEBUG = DEBUG;
+
+	path = path || "./tasks/" + taskName;
+
+	gulp.task(taskName, require(path)(gulp, options));
+}
+
+enumerable.from(tasks).forEach(x =>	defineTask(x.value, options));

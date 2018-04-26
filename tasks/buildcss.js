@@ -1,12 +1,12 @@
 'use strict';
 
+const cleanCSS = require("gulp-clean-css");
+const autoprefixer = require("gulp-autoprefixer");
+const debug = require("gulp-debug");
+const concat = require("gulp-concat");
+
 module.exports = function (gulp, options) {
 	return function () {
-		const cleanCSS = require("gulp-clean-css");
-		const autoprefixer = require("gulp-autoprefixer");
-		const debug = require("gulp-debug");
-		const concat = require("gulp-concat");
-
 		return gulp.src(options.cssAllPaths)
 			.pipe(cleanCSS())
 			.pipe(autoprefixer())

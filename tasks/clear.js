@@ -1,9 +1,9 @@
 'use strict';
 
+const del = require("del");
+
 module.exports = function (gulp, options) {
 	return function () {
-		const del = require("del");
-
 		return del(options.destinationFolder);
 	}
 };
